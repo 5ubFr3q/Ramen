@@ -117,7 +117,9 @@ function StackExpression({expr}: {expr: ast.StackExpression}) {
                     <Expression expr={e} />
                 </div>
             ))}
-            {mode == "insert" && insertionCursor == expr.id && <InsertionCursor />}
+            {mode == "insert" && insertionCursor == `${expr.id}:append` && (
+                <InsertionCursor />
+            )}
         </ExpressionContainer>
     )
 }
@@ -139,11 +141,11 @@ function FunctionCallExpression({expr}: {expr: ast.FunctionCallExpression}) {
                 </div>
             ))}
             {mode == "insert" &&
-                insertionCursor == expr.id &&
+                insertionCursor == `${expr.id}:append` &&
                 expr.arguments.length > 0 && (
                     <span className="font-mono mr-0.5 text-sm">,</span>
                 )}
-            {mode == "insert" && insertionCursor == expr.id && (
+            {mode == "insert" && insertionCursor == `${expr.id}:append` && (
                 <VerticalInsertionCursor />
             )}
             <span className="font-mono text-sm">)</span>
