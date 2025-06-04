@@ -2,6 +2,11 @@
 
 **Ramen is an AI-first programming language** optimized for vibe-coding.
 
+## 🌌 Why Ramen?
+
+Software is co-authored by humans and machines. Ramen is what happens when you design 
+a language not for compilers, but for transformers. It’s structurally rich, semantically dense, and 100% GPT-friendly.
+
 ## 🌟 Current Features
 
 This prototype demonstrates:
