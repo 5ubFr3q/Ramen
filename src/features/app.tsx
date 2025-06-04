@@ -295,7 +295,10 @@ export function App() {
                     </div>
 
                     {/* Console output */}
-                    <ScrollArea className="flex-1 bg-black text-green-400 font-mono text-sm p-3 rounded border mb-2 min-h-0">
+                    <ScrollArea
+                        className="bg-black text-green-400 font-mono text-sm p-3 rounded border mb-2"
+                        style={{height: "calc(100vh - 61px - 100px)"}} // Subtract header + console header + input area
+                    >
                         <div ref={consoleOutputRef}>
                             {consoleOutput.map((line, index) => (
                                 <div key={index} className="mb-1">
