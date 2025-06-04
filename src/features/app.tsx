@@ -4,6 +4,7 @@ import {Input} from "@/components/ui/input"
 import {ScrollArea} from "@/components/ui/scroll-area"
 import {useCallback, useEffect, useRef, useState} from "react"
 import {Expression} from "../components/Expression"
+import {HelpPanel} from "../components/HelpPanel"
 import {useKeyboard} from "../hooks/useKeyboard"
 import {createEnvironment, interpret, InterpreterError} from "../interpreter"
 import {useStore} from "../state"
@@ -26,6 +27,9 @@ export function App() {
     ])
     const [consoleInput, setConsoleInput] = useState("")
     const consoleOutputRef = useRef<HTMLDivElement>(null)
+
+    // Right panel tab state
+    const [activeTab, setActiveTab] = useState<"console" | "help">("console")
 
     // Maximum number of lines to keep in scrollback (prevents memory issues)
     const MAX_CONSOLE_LINES = 1000
@@ -211,9 +215,10 @@ export function App() {
         {key: "j", callback: moveSelectionDown},
         {key: "a", callback: enterInsertMode},
         {key: "d", callback: deleteNode},
+        {key: "?", callback: () => setActiveTab("help")},
     ]
 
-    const insertModeKeys: never[] = []
+    const insertModeKeys = [{key: "?", callback: () => setActiveTab("help")}]
 
     const shortcuts = mode == "normal" ? normalModeKeys : insertModeKeys
 
@@ -286,39 +291,77 @@ export function App() {
                         height: "calc(100vh - 61px)",
                     }}
                 >
-                    {/* Console header */}
-                    <div className="flex items-center justify-between mb-2 px-1">
-                        <h3 className="text-lg font-semibold">Console</h3>
-                        <Button onClick={clearConsole} variant="outline" size="sm">
-                            Clear
-                        </Button>
+                    {/* Tab headers */}
+                    <div className="flex items-center mb-2 border-b border-gray-200">
+                        <button
+                            onClick={() => setActiveTab("console")}
+                            className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
+                                activeTab === "console"
+                                    ? "border-blue-500 text-blue-600"
+                                    : "border-transparent text-gray-600 hover:text-gray-800"
+                            }`}
+                        >
+                            Console
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("help")}
+                            className={`px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
+                                activeTab === "help"
+                                    ? "border-blue-500 text-blue-600"
+                                    : "border-transparent text-gray-600 hover:text-gray-800"
+                            }`}
+                        >
+                            Help
+                        </button>
                     </div>
 
-                    {/* Console output */}
-                    <ScrollArea
-                        className="bg-black text-green-400 font-mono text-sm p-3 rounded border mb-2"
-                        style={{height: "calc(100vh - 61px - 100px)"}} // Subtract header + console header + input area
-                    >
-                        <div ref={consoleOutputRef}>
-                            {consoleOutput.map((line, index) => (
-                                <div key={index} className="mb-1">
-                                    {line}
+                    {/* Tab content */}
+                    <div className="flex-1 flex flex-col overflow-hidden">
+                        {activeTab === "console" ? (
+                            <>
+                                {/* Console header */}
+                                <div className="flex items-center justify-between mb-2 px-1">
+                                    <h3 className="text-lg font-semibold">Console</h3>
+                                    <Button
+                                        onClick={clearConsole}
+                                        variant="outline"
+                                        size="sm"
+                                    >
+                                        Clear
+                                    </Button>
                                 </div>
-                            ))}
-                        </div>
-                    </ScrollArea>
 
-                    {/* Console input */}
-                    <div className="flex items-center gap-2 px-1">
-                        <span className="text-sm font-mono text-gray-600">$</span>
-                        <Input
-                            type="text"
-                            value={consoleInput}
-                            onChange={(e) => setConsoleInput(e.target.value)}
-                            onKeyDown={handleConsoleSubmit}
-                            className="flex-1 text-sm font-mono"
-                            placeholder="Type a command..."
-                        />
+                                {/* Console output */}
+                                <ScrollArea className="bg-black text-green-400 font-mono text-sm p-3 rounded border mb-2 flex-1">
+                                    <div ref={consoleOutputRef}>
+                                        {consoleOutput.map((line, index) => (
+                                            <div key={index} className="mb-1">
+                                                {line}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+
+                                {/* Console input */}
+                                <div className="flex items-center gap-2 px-1">
+                                    <span className="text-sm font-mono text-gray-600">
+                                        $
+                                    </span>
+                                    <Input
+                                        type="text"
+                                        value={consoleInput}
+                                        onChange={(e) =>
+                                            setConsoleInput(e.target.value)
+                                        }
+                                        onKeyDown={handleConsoleSubmit}
+                                        className="flex-1 text-sm font-mono"
+                                        placeholder="Type a command..."
+                                    />
+                                </div>
+                            </>
+                        ) : (
+                            <HelpPanel />
+                        )}
                     </div>
                 </div>
             </div>
