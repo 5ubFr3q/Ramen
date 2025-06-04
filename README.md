@@ -1,15 +1,6 @@
 # Ramen 🍜
 
-**Ramen is a research prototype for an AI-first programming language** designed to explore how programming languages can be optimized for AI code generation and manipulation.
-
-## 🧪 Research Goals
-
-This project investigates key questions about AI-native programming languages:
-
-- **Structured Representation**: How can programs be represented as structured data (expressions trees) rather than text to improve AI comprehension?
-- **Semantic Clarity**: What language constructs minimize ambiguity and maximize interpretability for AI systems?
-- **Compositional Design**: How can simple, well-defined expression types combine to create complex programs?
-- **AI-Friendly Syntax**: What programming paradigms are most natural for AI agents to generate and modify?
+**Ramen is an AI-first programming language** optimized for vibe-coding.
 
 ## 🌟 Current Features
 
