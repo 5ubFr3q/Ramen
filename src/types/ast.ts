@@ -1,4 +1,4 @@
-export type Value = number | string
+export type Value = number | string | boolean
 
 export type Expression =
     | StackExpression
@@ -7,6 +7,9 @@ export type Expression =
     | WhileExpression
     | AssignmentExpression
     | VariableExpression
+    | IfExpression
+    | FunctionDefinitionExpression
+    | BooleanExpression
 
 export interface BaseExpression {
     id: string
@@ -43,4 +46,25 @@ export interface AssignmentExpression extends BaseExpression {
 export interface VariableExpression extends BaseExpression {
     kind: "VariableExpression"
     variableName: string
+}
+
+export interface IfExpression extends BaseExpression {
+    kind: "IfExpression"
+    condition: Expression
+    thenBranch: Expression
+    elseBranch?: Expression
+}
+
+export interface FunctionDefinitionExpression extends BaseExpression {
+    kind: "FunctionDefinitionExpression"
+    functionName: string
+    parameters: string[]
+    body: Expression
+}
+
+export interface BooleanExpression extends BaseExpression {
+    kind: "BooleanExpression"
+    operator: "and" | "or" | "not" | "equals" | "lessThan" | "greaterThan"
+    left?: Expression
+    right?: Expression
 }

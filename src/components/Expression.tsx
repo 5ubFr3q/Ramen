@@ -218,6 +218,117 @@ function VariableExpression({expr}: {expr: ast.VariableExpression}) {
     )
 }
 
+function IfExpression({expr}: {expr: ast.IfExpression}) {
+    const {mode, insertionCursor} = useInsertionCursor()
+
+    return (
+        <ExpressionContainer
+            expr={expr}
+            className="flex flex-col gap-1 p-1 bg-orange-50"
+        >
+            <div className="flex items-center gap-1">
+                <span className="font-mono font-semibold text-sm">if</span>
+                {mode == "insert" && insertionCursor == expr.condition.id && (
+                    <VerticalInsertionCursor />
+                )}
+                <Expression expr={expr.condition} />
+            </div>
+            <div className="ml-3">
+                <div className="text-xs text-gray-500 font-mono">then:</div>
+                {mode == "insert" && insertionCursor == expr.thenBranch.id && (
+                    <InsertionCursor />
+                )}
+                <Expression expr={expr.thenBranch} />
+            </div>
+            {expr.elseBranch && (
+                <div className="ml-3">
+                    <div className="text-xs text-gray-500 font-mono">else:</div>
+                    {mode == "insert" && insertionCursor == expr.elseBranch.id && (
+                        <InsertionCursor />
+                    )}
+                    <Expression expr={expr.elseBranch} />
+                </div>
+            )}
+        </ExpressionContainer>
+    )
+}
+
+function FunctionDefinitionExpression({
+    expr,
+}: {
+    expr: ast.FunctionDefinitionExpression
+}) {
+    const {mode, insertionCursor} = useInsertionCursor()
+
+    return (
+        <ExpressionContainer expr={expr} className="flex flex-col gap-1 p-1 bg-cyan-50">
+            <div className="flex items-center gap-1">
+                <span className="font-mono font-semibold text-sm">fn</span>
+                <span className="font-mono font-semibold text-cyan-600 text-sm">
+                    {expr.functionName}
+                </span>
+                <span className="font-mono text-sm">(</span>
+                {expr.parameters.map((param, i) => (
+                    <span key={param} className="font-mono text-sm text-gray-600">
+                        {i > 0 && ", "}
+                        {param}
+                    </span>
+                ))}
+                <span className="font-mono text-sm">)</span>
+            </div>
+            <div className="ml-3">
+                {mode == "insert" && insertionCursor == expr.body.id && (
+                    <InsertionCursor />
+                )}
+                <Expression expr={expr.body} />
+            </div>
+        </ExpressionContainer>
+    )
+}
+
+function BooleanExpression({expr}: {expr: ast.BooleanExpression}) {
+    const {mode, insertionCursor} = useInsertionCursor()
+
+    if (expr.operator === "not") {
+        return (
+            <ExpressionContainer expr={expr} className="flex items-center gap-1 px-1">
+                <span className="font-mono font-semibold text-red-600 text-sm">
+                    not
+                </span>
+                {mode == "insert" && insertionCursor == expr.left?.id && (
+                    <VerticalInsertionCursor />
+                )}
+                {expr.left && <Expression expr={expr.left} />}
+            </ExpressionContainer>
+        )
+    }
+
+    const operatorSymbol =
+        {
+            and: "&&",
+            or: "||",
+            equals: "==",
+            lessThan: "<",
+            greaterThan: ">",
+        }[expr.operator] || expr.operator
+
+    return (
+        <ExpressionContainer expr={expr} className="flex items-center gap-1 px-1">
+            {mode == "insert" && insertionCursor == expr.left?.id && (
+                <VerticalInsertionCursor />
+            )}
+            {expr.left && <Expression expr={expr.left} />}
+            <span className="font-mono font-semibold text-red-600 text-sm">
+                {operatorSymbol}
+            </span>
+            {mode == "insert" && insertionCursor == expr.right?.id && (
+                <VerticalInsertionCursor />
+            )}
+            {expr.right && <Expression expr={expr.right} />}
+        </ExpressionContainer>
+    )
+}
+
 export function Expression({expr}: {expr: ast.Expression}) {
     switch (expr.kind) {
         case "StackExpression":
@@ -232,6 +343,12 @@ export function Expression({expr}: {expr: ast.Expression}) {
             return <AssignmentExpression expr={expr} />
         case "VariableExpression":
             return <VariableExpression expr={expr} />
+        case "IfExpression":
+            return <IfExpression expr={expr} />
+        case "FunctionDefinitionExpression":
+            return <FunctionDefinitionExpression expr={expr} />
+        case "BooleanExpression":
+            return <BooleanExpression expr={expr} />
         default:
             expr satisfies never
     }
